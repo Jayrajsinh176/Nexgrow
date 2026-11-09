@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ProfitSharingSlot;
+use App\Support\Chain;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -12,6 +13,14 @@ class ProfitSharingSlotController extends Controller
     public function index(Request $request): View
     {
         $user = $request->user();
+
+        if (Chain::enabled()) {
+            return view('profit-sharing-slot-chain', [
+                'user' => $user,
+                'deployed' => Chain::isDeployed(),
+            ]);
+        }
+
         $totalSlots = (int) config('profit_sharing_slot.total_slots');
         $sold = ProfitSharingSlot::count();
 
@@ -38,6 +47,10 @@ class ProfitSharingSlotController extends Controller
 
     public function purchase(Request $request): RedirectResponse
     {
+        if ($refused = $this->refuseInChainMode()) {
+            return $refused;
+        }
+
         try {
             $request->user()->purchaseProfitSharingSlot();
         } catch (\RuntimeException $e) {
@@ -49,6 +62,10 @@ class ProfitSharingSlotController extends Controller
 
     public function withdraw(Request $request, ProfitSharingSlot $slot): RedirectResponse
     {
+        if ($refused = $this->refuseInChainMode()) {
+            return $refused;
+        }
+
         try {
             $withdrawn = $request->user()->withdrawProfitSharingSlot($slot);
         } catch (\RuntimeException $e) {
@@ -57,5 +74,18 @@ class ProfitSharingSlotController extends Controller
 
         return redirect()->route('profit-sharing-slot.index')
             ->with('status', "Slot withdrawn: {$withdrawn->withdrawal_amount} credited ({$withdrawn->penalty_percent}% penalty).");
+    }
+
+    /**
+     * In chain mode slots are bought and withdrawn with the user's wallet.
+     */
+    protected function refuseInChainMode(): ?RedirectResponse
+    {
+        if (! Chain::enabled()) {
+            return null;
+        }
+
+        return redirect()->route('profit-sharing-slot.index')
+            ->withErrors(['slot' => 'Slots are bought and withdrawn with your wallet on this page.']);
     }
 }

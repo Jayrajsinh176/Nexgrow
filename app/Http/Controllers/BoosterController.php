@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Support\Chain;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -22,6 +23,10 @@ class BoosterController extends Controller
     public function __invoke(Request $request): View
     {
         $user = $request->user();
+
+        if (Chain::enabled()) {
+            return Chain::incomeView('booster', $user);
+        }
 
         $currentBusiness = $user->teamBusinessVolume($user->booster_period_started_at, now());
         $currentPercentage = User::boosterPercentageForBusiness($currentBusiness);

@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\DB;
 
 class PayDailyNftBonus extends Command
 {
+    use SkipsInChainMode;
+
     /**
      * The name and signature of the console command.
      *
@@ -27,6 +29,10 @@ class PayDailyNftBonus extends Command
      */
     public function handle(): void
     {
+        if ($this->skippedInChainMode()) {
+            return;
+        }
+
         $nfts = UserNft::with(['user', 'nftPackage'])
             ->where('status', 'active')
             ->get();

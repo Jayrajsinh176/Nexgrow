@@ -7,6 +7,8 @@ use Illuminate\Console\Command;
 
 class ProcessMonthlyLoyaltyBonus extends Command
 {
+    use SkipsInChainMode;
+
     /**
      * The name and signature of the console command.
      *
@@ -26,6 +28,10 @@ class ProcessMonthlyLoyaltyBonus extends Command
      */
     public function handle(): void
     {
+        if ($this->skippedInChainMode()) {
+            return;
+        }
+
         $periodStart = now()->startOfMonth();
         $periodEnd = now()->endOfMonth();
 

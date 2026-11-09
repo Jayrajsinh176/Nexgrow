@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\Chain;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -20,6 +21,10 @@ class ReferralIncomeController extends Controller
     public function __invoke(Request $request): View
     {
         $user = $request->user();
+
+        if (Chain::enabled()) {
+            return Chain::incomeView('referral-income', $user);
+        }
         $search = is_string($request->query('search')) ? trim($request->query('search')) : '';
         $range = $request->query('range');
         $range = is_string($range) && isset(self::DATE_RANGES[$range]) ? $range : null;

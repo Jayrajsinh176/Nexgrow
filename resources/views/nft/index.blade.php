@@ -108,7 +108,7 @@
                 $affordable = (float) $balance >= (float) $package->price;
                 $owned = $activeNft?->nft_package_id == $package->id;
             @endphp
-            <div class="nx-panel flex flex-col p-5 {{ $owned ? 'nx-panel-gold' : '' }}">
+            <div class="nx-panel flex flex-col p-5 transition {{ $owned ? 'nx-panel-gold' : ($activeNft ? 'opacity-50' : '') }}">
                 <div class="flex items-center gap-4">
                     <svg class="h-20 w-20 shrink-0" viewBox="0 0 80 80" style="filter: drop-shadow(0 0 14px {{ $glow }})" aria-hidden="true">
                         <defs>
@@ -155,10 +155,15 @@
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
                             Your active package
                         </p>
-                    @elseif ($activeNft || ! $affordable)
+                    @elseif ($activeNft)
+                        <p class="flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-400 cursor-not-allowed select-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                            Locked &middot; Active package running
+                        </p>
+                    @elseif (! $affordable)
                         <p class="flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-300">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
-                            {{ $activeNft ? 'Available after your active NFT completes' : 'Insufficient balance' }}
+                            Insufficient balance
                         </p>
                     @else
                         <form method="POST" action="{{ route('nft.purchase') }}"

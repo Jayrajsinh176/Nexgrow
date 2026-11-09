@@ -3,22 +3,22 @@
 @php
     $stats = [
         [
-            'label' => 'Total Team Size', 'value' => $totalTeamCount, 'hint' => 'All levels in your downline',
+            'field' => '', 'label' => 'Total Team Size', 'value' => $totalTeamCount, 'hint' => 'All levels in your downline',
             'tile' => 'border-nx-gold/60 bg-nx-gold/10 text-nx-gold', 'panel' => 'nx-panel-gold',
             'icon' => 'M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-4.13a4 4 0 10-4-4 4 4 0 004 4zm6 0a4 4 0 10-4-4',
         ],
         [
-            'label' => 'Direct Referrals', 'value' => $directReferralsCount, 'hint' => 'Level 1 members',
+            'field' => '', 'label' => 'Direct Referrals', 'value' => $directReferralsCount, 'hint' => 'Level 1 members',
             'tile' => 'border-emerald-400/50 bg-emerald-400/10 text-emerald-300', 'panel' => '',
             'icon' => 'M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-4.13a4 4 0 10-4-4 4 4 0 004 4zm6 0a4 4 0 10-4-4',
         ],
         [
-            'label' => 'Active Members', 'value' => $activeMembersCount, 'hint' => 'With an active NFT package',
+            'field' => 'active-members', 'label' => 'Active Members', 'value' => $activeMembersCount, 'hint' => 'With an active NFT package',
             'tile' => 'border-violet-400/50 bg-violet-500/15 text-violet-300', 'panel' => '',
             'icon' => 'M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-4.13a4 4 0 10-4-4 4 4 0 004 4zm6 0a4 4 0 10-4-4',
         ],
         [
-            'label' => 'New This Month', 'value' => $newThisMonthCount, 'hint' => 'Joined in '.now()->format('F Y'),
+            'field' => '', 'label' => 'New This Month', 'value' => $newThisMonthCount, 'hint' => 'Joined in '.now()->format('F Y'),
             'tile' => 'border-nx-gold/60 bg-nx-gold/10 text-nx-gold', 'panel' => '',
             'icon' => 'M8 7V3m8 4V3M4 11h16M5 5h14a1 1 0 011 1v13a1 1 0 01-1 1H5a1 1 0 01-1-1V6a1 1 0 011-1zm4 10l2 2 4-4',
         ],
@@ -58,7 +58,7 @@
                 </span>
                 <div class="min-w-0 flex-1">
                     <p class="text-sm text-slate-300">{{ $stat['label'] }}</p>
-                    <p class="mt-1 truncate text-2xl font-bold text-white">{{ number_format($stat['value']) }}</p>
+                    <p class="mt-1 truncate text-2xl font-bold text-white" @if(!empty($stat['field'])) data-nx-field="{{ $stat['field'] }}" @endif>{{ number_format($stat['value']) }}</p>
                     <p class="mt-1 text-xs text-slate-400">{{ $stat['hint'] }}</p>
                 </div>
             </div>
@@ -66,7 +66,7 @@
     </section>
 
     {{-- Members --}}
-    <section class="nx-panel overflow-hidden">
+    <section class="nx-panel overflow-hidden" @if(\App\Support\Chain::enabled()) data-nx-chain="team" @endif>
         @if ($members->isEmpty())
             <p class="px-6 py-12 text-center text-sm text-slate-400">
                 @if ($level)
@@ -81,28 +81,65 @@
                     <thead>
                         <tr class="border-b border-white/10 text-emerald-300">
                             <th class="px-6 py-4 font-semibold">#</th>
-                            <th class="px-4 py-4 font-semibold">Name</th>
-                            <th class="px-4 py-4 font-semibold">Email</th>
-                            <th class="px-4 py-4 font-semibold">Mobile</th>
+                            <th class="px-4 py-4 font-semibold">Member</th>
+                            <th class="px-4 py-4 font-semibold">Wallet Address</th>
                             <th class="px-4 py-4 font-semibold">Level</th>
+                            <th class="px-4 py-4 font-semibold">Package</th>
                             <th class="px-4 py-4 font-semibold">Sponsor</th>
                             <th class="px-6 py-4 font-semibold">Joined</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-white/5">
                         @foreach ($members as $member)
-                            <tr class="transition hover:bg-white/3">
+                            <tr class="transition hover:bg-white/3" data-nx-member-wallet="{{ strtolower($member->wallet_address ?? '') }}">
                                 <td class="px-6 py-3 text-slate-300">{{ $members->firstItem() + $loop->index }}</td>
                                 <td class="px-4 py-3 whitespace-nowrap">
-                                    <span class="font-medium text-white">{{ $member->name }}</span>
-                                    <span class="text-sky-400/80">({{ $member->user_id }})</span>
+                                    @if ($member->name)
+                                        <span class="font-medium text-white">{{ $member->name }}</span>
+                                        <span class="text-sky-400/80 font-mono text-xs">({{ $member->user_id }})</span>
+                                    @else
+                                        <span class="font-medium font-mono text-white">{{ $member->user_id }}</span>
+                                    @endif
                                 </td>
-                                <td class="px-4 py-3 text-slate-300">{{ $member->email }}</td>
-                                <td class="px-4 py-3 text-slate-300">{{ $member->mobile }}</td>
+                                <td class="px-4 py-3 font-mono text-xs text-slate-300 whitespace-nowrap">
+                                    @if ($member->wallet_address)
+                                        <span title="{{ $member->wallet_address }}">{{ Str::substr($member->wallet_address, 0, 6) }}…{{ Str::substr($member->wallet_address, -4) }}</span>
+                                    @else
+                                        <span class="text-slate-500">—</span>
+                                    @endif
+                                </td>
                                 <td class="px-4 py-3">
                                     <span class="inline-flex min-w-10 justify-center rounded-lg px-2 py-1 text-xs font-bold {{ $member->team_level === 1 ? 'bg-emerald-600/40 text-emerald-200 ring-1 ring-emerald-400/40' : 'bg-white/10 text-slate-200 ring-1 ring-white/10' }}">
                                         L{{ $member->team_level }}
                                     </span>
+                                </td>
+                                <td class="px-4 py-3 whitespace-nowrap">
+                                    @if (\App\Support\Chain::enabled())
+                                        @if ($member->wallet_address)
+                                            <span data-nx-field="package" class="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-xs text-slate-400">
+                                                <svg class="h-3 w-3 animate-spin text-nx-gold/70" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+                                                <span>Checking...</span>
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-xs text-slate-400">
+                                                No Wallet
+                                            </span>
+                                        @endif
+                                    @else
+                                        @php
+                                            $activeNft = $member->nfts->firstWhere('status', 'active');
+                                        @endphp
+                                        @if ($activeNft)
+                                            <span class="inline-flex items-center gap-1.5 rounded-lg border border-nx-gold/50 bg-nx-gold/10 px-2.5 py-1 text-xs font-semibold text-nx-gold">
+                                                <span class="h-1.5 w-1.5 rounded-full bg-nx-gold"></span>
+                                                {{ number_format($activeNft->purchase_price) }} NXD
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-xs text-slate-400">
+                                                None
+                                            </span>
+                                        @endif
+                                    @endif
                                 </td>
                                 <td class="px-4 py-3 text-slate-300">{{ $member->sponsor?->name }}</td>
                                 <td class="px-6 py-3 whitespace-nowrap text-slate-300">{{ $member->created_at->format('d M Y') }}</td>

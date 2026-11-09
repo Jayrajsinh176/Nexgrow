@@ -14,3 +14,6 @@ Schedule::command('app:process-team-performance-bonuses')->everyTwoMinutes();
 Schedule::command('app:process-monthly-loyalty-bonus')->daily();
 Schedule::command('app:process-royalty-bonus')->daily();
 Schedule::command('app:process-team-development-bonus')->everyTwoMinutes();
+
+// On-chain keeper; does nothing until BLOCKCHAIN_KEEPER_ENABLED=true.
+Schedule::command('app:run-blockchain-keeper')->everyTenMinutes()->withoutOverlapping();

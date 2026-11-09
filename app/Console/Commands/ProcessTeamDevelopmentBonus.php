@@ -7,6 +7,8 @@ use Illuminate\Console\Command;
 
 class ProcessTeamDevelopmentBonus extends Command
 {
+    use SkipsInChainMode;
+
     /**
      * The name and signature of the console command.
      *
@@ -26,6 +28,10 @@ class ProcessTeamDevelopmentBonus extends Command
      */
     public function handle(): void
     {
+        if ($this->skippedInChainMode()) {
+            return;
+        }
+
         $users = User::all();
         $newlyQualified = 0;
 

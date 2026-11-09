@@ -20,8 +20,12 @@ class DashboardController extends Controller
         'team_performance_bonus' => 'Team Performance Bonus',
     ];
 
-    public function __invoke(Request $request): View
+    public function __invoke(Request $request): View|\Illuminate\Http\RedirectResponse
     {
+        if ($request->user()->is_admin) {
+            return redirect()->route('admin.dashboard');
+        }
+
         $user = $request->user()->load('sponsor');
         $team = $user->teamMembers();
 

@@ -50,6 +50,9 @@
 
 @section('content')
 <div class="space-y-5 text-slate-200">
+    @if (\App\Support\Chain::enabled())
+        @include('partials.chain-dashboard')
+    @endif
 
     {{-- Welcome hero --}}
     <section class="nx-panel nx-panel-gold overflow-hidden">

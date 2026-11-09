@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\Chain;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -10,6 +11,10 @@ class RoyaltyBonusController extends Controller
     public function __invoke(Request $request): View
     {
         $user = $request->user();
+
+        if (Chain::enabled()) {
+            return Chain::incomeView('royalty-bonus', $user);
+        }
         $threshold = (string) config('royalty_bonus.direct_business_threshold');
         $qualification = $user->royaltyQualification;
 

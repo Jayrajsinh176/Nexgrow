@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\Chain;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -12,6 +13,10 @@ class TeamBuildingBenefitController extends Controller
     public function __invoke(Request $request): View
     {
         $user = $request->user();
+
+        if (Chain::enabled()) {
+            return Chain::incomeView('team-building-benefits', $user);
+        }
         $maxLevels = (int) config('team_building_benefits.max_levels');
         $minimumDirects = (int) config('team_building_benefits.minimum_direct_referrals');
         $directCount = $user->referrals()->count();

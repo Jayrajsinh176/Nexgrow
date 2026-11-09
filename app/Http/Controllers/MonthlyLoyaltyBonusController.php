@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\Chain;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -10,6 +11,10 @@ class MonthlyLoyaltyBonusController extends Controller
     public function __invoke(Request $request): View
     {
         $user = $request->user();
+
+        if (Chain::enabled()) {
+            return Chain::incomeView('monthly-loyalty-bonus', $user);
+        }
         $periodStart = now()->startOfMonth();
         $periodEnd = now()->endOfMonth();
         $threshold = (string) config('monthly_loyalty_bonus.direct_business_threshold');

@@ -104,6 +104,8 @@
         </div>
     </section>
 
+    @include('partials.chain-wallet')
+
     {{-- Stat cards --}}
     <section class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         @foreach ($stats as $stat)

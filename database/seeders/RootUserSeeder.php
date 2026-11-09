@@ -15,7 +15,8 @@ class RootUserSeeder extends Seeder
      */
     public function run(): void
     {
-        $admin = User::where('email', 'admin@nexgrow.com')->first();
+        $admin = User::where('user_id', 'NEXGROW01')->first()
+            ?? User::where('is_admin', true)->first();
 
         if ($admin) {
             // Re-running the seeder always keeps this account promoted,
@@ -29,12 +30,9 @@ class RootUserSeeder extends Seeder
         // token_balance are intentionally excluded from $fillable.
         User::forceCreate([
             'name' => 'Nexgrow Admin',
-            'mobile' => '9999999999',
-            'password' => Hash::make('Nexgrow@123'),
             'user_id' => 'NEXGROW01',
             'sponsor_id' => null,
             'is_admin' => true,
-            'email_verified_at' => now(),
         ]);
     }
 }

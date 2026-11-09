@@ -1,0 +1,23 @@
+{
+  "chainId": "97",
+  "deployedAt": "2026-10-14T06:19:52.857Z",
+  "startBlock": 136692701,
+  "contracts": {
+    "paymentToken": "0xd396827Dbe9C47a7f42DDDf04e7f1F3d7DacDa79",
+    "treasury": "0x91a1769072208eA892f0518aC9E11Fce3889F095",
+    "nft": "0x7841552f6676f8240b2cdc6669897E27BcaEa367",
+    "manager": "0x61D9A9E92a6E79a18b6294f68Ba1a9b616eee0DC",
+    "rewardPool": "0x0248Fd90551afC1b5DE4c64B164Bd0B2066f029a",
+    "liquidityPool": "0xa1EAbEF01EF86aa5f40BaAd1757311bfa59f1cbd",
+    "nftIncome": "0x2d3af6a3D4f7D680A173383A55F41e55f51ef57d",
+    "referralIncome": "0xEe9a84A96E75e31ff08B0C305F366dcB8298382b",
+    "teamBuildingIncome": "0x38a6b7b6EE05461c1229315b443991CE231736cd",
+    "teamBusiness": "0x90Bebcd01C602cB34505c9081f50bb18d1a45169",
+    "bonusBooster": "0x050c66bc807EceE3Ca0C448c91b8245aC83C4170",
+    "teamPerformanceBonus": "0x4B78C09BF7fbF95972C75C701DFd5784decF58D3",
+    "monthlyLoyaltyBonus": "0x0e100e2F51DD8fc49c7e34F34059b51374c8b118",
+    "royaltyBonus": "0x21540c494833c59f3c9fdC66e99Ff299951ab58B",
+    "teamDevelopmentBonus": "0xaD8D6fc133028b202B747aef2527Cf9B9C2cA26B",
+    "profitSharingSlot": "0xAa523C45361454d4Bf34fD3dA5361DFa507b6e6d"
+  }
+}

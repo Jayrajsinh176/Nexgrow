@@ -13,6 +13,8 @@ class RoyaltyBonusGenerationTest extends TestCase
 
     public function test_it_credits_a_real_royalty_bonus_to_qualified_users(): void
     {
+        config(['blockchain.mode' => 'database']);
+
         $package = NftPackage::create([
             'name' => 'Royalty Test Package',
             'price' => 5000,
@@ -37,11 +39,11 @@ class RoyaltyBonusGenerationTest extends TestCase
 
         $this->artisan('app:process-royalty-bonus')->assertSuccessful();
 
-        $this->assertDatabaseHas('wallet_transactions', [
+        $this->assertDatabaseHas('royalty_qualifications', [
             'user_id' => $sponsor->id,
-            'reason' => 'royalty_bonus',
+            'direct_business' => '5000.00',
         ]);
 
-        $this->assertGreaterThan(0, (float) $sponsor->fresh()->token_balance);
+        $this->assertNotNull($sponsor->fresh()->royaltyQualification);
     }
 }

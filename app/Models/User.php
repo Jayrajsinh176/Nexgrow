@@ -24,12 +24,28 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
-        'email',
-        'mobile',
-        'password',
         'user_id',
         'sponsor_id',
+        'wallet_address',
+        'wallet_linked_at',
+        'is_admin',
     ];
+
+    /**
+     * Check if user is an administrator via DB flag or config/admin.php wallet list.
+     */
+    public function isAdmin(): bool
+    {
+        if ($this->is_admin) {
+            return true;
+        }
+
+        if ($this->wallet_address && in_array(strtolower($this->wallet_address), config('admin.wallets', []), true)) {
+            return true;
+        }
+
+        return false;
+    }
 
     protected static function booted(): void
     {
@@ -105,7 +121,7 @@ class User extends Authenticatable
         $level = 1;
 
         while ($levelIds !== []) {
-            $levelUsers = static::with('sponsor')->whereIn('sponsor_id', $levelIds)->get();
+            $levelUsers = static::with(['sponsor', 'nfts.nftPackage'])->whereIn('sponsor_id', $levelIds)->get();
 
             if ($levelUsers->isEmpty()) {
                 break;
@@ -841,7 +857,6 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $hidden = [
-        'password',
         'remember_token',
     ];
 
@@ -853,12 +868,11 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
             'is_admin' => 'boolean',
             'token_balance' => 'decimal:2',
             'booster_period_started_at' => 'datetime',
             'next_booster_due_at' => 'datetime',
+            'wallet_linked_at' => 'datetime',
         ];
     }
 }

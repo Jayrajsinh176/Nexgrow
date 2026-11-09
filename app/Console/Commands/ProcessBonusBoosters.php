@@ -7,6 +7,8 @@ use Illuminate\Console\Command;
 
 class ProcessBonusBoosters extends Command
 {
+    use SkipsInChainMode;
+
     /**
      * The name and signature of the console command.
      *
@@ -26,6 +28,10 @@ class ProcessBonusBoosters extends Command
      */
     public function handle(): void
     {
+        if ($this->skippedInChainMode()) {
+            return;
+        }
+
         $users = User::where('next_booster_due_at', '<=', now())->get();
 
         $qualified = 0;
